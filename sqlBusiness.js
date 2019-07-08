@@ -15,7 +15,26 @@ connection.connect(function callback(err) {
   }
 });
 
-function saveIpa(name, version, buildVersion, description, resourceURL, date, cb) {
+function readListOfIpaInfo(pageNum,pageSize,cb){
+  console.log('数据库读取 处理开始 '+'pageNum:'+ pageNum +'pageSize:'+ pageSize);
+  let beginIndex = (pageNum - 1) * pageSize;
+  let endIndex = pageNum  * pageSize;
+  var readSql = 'SELECT * from info order by id desc limit ' + beginIndex + ',' +endIndex;
+  connection.query(readSql, function (err, result) {
+    if(err){
+      console.log('[SELECT ERROR] - ', err.message);
+      cb(false);
+      return;
+    }
+    console.log('--------------------------SELECT----------------------------');
+    console.log('SELECT ID:', JSON.stringify(result));
+    console.log('-----------------------------------------------------------------\n\n');
+
+    cb(result);
+  });
+
+}
+function saveIpaInfo(name, version, buildVersion, description, resourceURL, date, cb) {
   console.log('数据库存储 处理开始');
 
   var addSql = 'INSERT INTO info(id,name,version,buildVersion,description,resourceURL,date) VALUES(0,?,?,?,?,?,?)';
@@ -30,7 +49,6 @@ function saveIpa(name, version, buildVersion, description, resourceURL, date, cb
       }
 
       console.log('--------------------------INSERT----------------------------');
-      //console.log('INSERT ID:',result.insertId);        
       console.log('INSERT ID:', result);
       console.log('-----------------------------------------------------------------\n\n');
 
@@ -40,5 +58,6 @@ function saveIpa(name, version, buildVersion, description, resourceURL, date, cb
 }
 
 module.exports = {
-  saveIpa : saveIpa,
+  saveIpaInfo : saveIpaInfo,
+  readListOfIpaInfo : readListOfIpaInfo,
 };

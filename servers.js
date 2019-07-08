@@ -49,7 +49,40 @@ var server = app.listen(8888, 'localhost', function () {
 app.get('/index.html', function (req, res) {
     res.sendFile(__dirname + "/" + "index.html");
 })
+/**
+ * 读取列表
+ * pageNum:num 
+ * pageSize:num
+ */
+app.get('/list', function (req, res) {
+    var resData = {
+        'code': -1,
+        'msg': '参数错误'
+    };
+    res.writeHead(200, {
+        "Content-Type": "text/html;charset=utf-8"
+    });
+    if(!(req.query.pageNum && req.query.pageNum > 0) || !(req.query.pageSize && req.query.pageSize >0)){
+        res.end(JSON.stringify(resData));
+        return;
+    }
 
+    let pageNum = req.query.pageNum;
+    let pageSize = req.query.pageSize;
+    sqlBusiness.readListOfIpaInfo(pageNum,pageSize ,function (result){
+        if(!result){
+            res.end(JSON.stringify(resData));
+            return;
+        }
+        var resData = {
+            'code': 0,
+            'msg': '查询成功',
+            'data':JSON.stringify(result)
+        };
+        res.end(JSON.stringify(resData));
+    })
+
+})
 
 app.post('/upload', upload.any(), function (req, res) {
     // console.log('123' + util.inspect(req));
@@ -90,7 +123,7 @@ app.post('/upload', upload.any(), function (req, res) {
         // 数据库存储
         let plistURL = path.join(baseURL, plistPath);
 
-        sqlBusiness.saveIpa('MAMTest', '2.5.4', '0.0.1', '就是版本提测啦', plistURL, currentDate, function (isSuccess) {
+        sqlBusiness.saveIpaInfo('MAMTest', '2.5.4', '0.0.1', '就是版本提测啦', plistURL, currentDate, function (isSuccess) {
             if (isSuccess) {
                 console.log('上传成功');
 
