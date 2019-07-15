@@ -5,6 +5,9 @@ var util = require('util');
 var handFile = require('./handFile');
 var path = require('path');
 var sqlBusiness = require('./sqlBusiness')
+var fs = require('fs');
+var https = require('https');
+var http = require('http');
 // multer 初始化
 let upload = multer({
     dest: 'tmp'
@@ -32,23 +35,61 @@ Date.prototype.format = function (fmt) {
     return fmt;
 }
 
-
+//获取本机ip地址
+function getIPAdress() {
+    let interfaces = require('os').networkInterfaces();　　
+    for (let devName in interfaces) {　　　　
+        let iface = interfaces[devName];　　　　　　
+        for (let i = 0; i < iface.length; i++) {
+            let alias = iface[i];
+            if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+                return alias.address;
+            }
+        }　　
+    }
+}
 
 // express
-var host, port;
+app.use(express.static(__dirname + 'source/certificate'));
+app.use('/store',express.static(__dirname + '/store'));
 
-var server = app.listen(8888, 'localhost', function () {
-    host = server.address().address
-    port = server.address().port
 
-    console.log("应用实例，访问地址为 http://%s:%s", host, port)
+let options = {
+    key: fs.readFileSync('.source/certificate/privateCA.pem', 'utf8'),
+    cert: fs.readFileSync('.source/certificate/myCA.cer', 'utf8')
+};
+var httpServer = http.createServer(app);
+var httpsServer = https.createServer(options, app);
+
+
+var host = getIPAdress();// 自己的 ip
+var httpsPort = 8886;
+var httpPort = 8888;
+// https
+httpsServer.listen(httpsPort, host, function () {
+
+    console.log("应用实例，访问地址为 https://%s:%s", host, httpsPort)
+
+})
+// http
+httpServer.listen(httpPort, host, function () {
+
+    console.log("应用实例，访问地址为 http://%s:%s", host, httpPort)
+
 })
 
 
 
+app.get('/', function (req, res) {
+    res.sendFile(__dirname + "/" + "index.html");
+})
 app.get('/index.html', function (req, res) {
     res.sendFile(__dirname + "/" + "index.html");
 })
+app.get('/ipaList.html', function (req, res) {
+    res.sendFile(__dirname + "/" + "ipaList.html");
+})
+
 /**
  * 读取列表
  * pageNum:num 
@@ -116,12 +157,12 @@ app.post('/upload', upload.any(), function (req, res) {
             return;
         }
         // plist
-        let baseURL = 'http://' + host + ':' + port;
-        let ipaURL = path.join(baseURL, ipaPath);
+        let baseURL = `https://${host}:${httpsPort}`;
+        let ipaURL = baseURL + '/' + ipaPath;
         let plistPath = handFile.handlePlist(destDir, ipaURL)
 
         // 数据库存储
-        let plistURL = path.join(baseURL, plistPath);
+        let plistURL = baseURL + '/' +plistPath;
 
         sqlBusiness.saveIpaInfo('MAMTest', '2.5.4', '0.0.1', '就是版本提测啦', plistURL, currentDate, function (isSuccess) {
             if (isSuccess) {
