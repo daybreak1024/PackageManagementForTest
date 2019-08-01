@@ -50,13 +50,14 @@ function getIPAdress() {
 }
 
 // express
-app.use(express.static(__dirname + 'source/certificate'));
+app.use(express.static(__dirname + '/source/certificate'));
 app.use('/store',express.static(__dirname + '/store'));
+app.use(express.static(__dirname + '/node_modules/jquery'));
 
 
 let options = {
-    key: fs.readFileSync('.source/certificate/privateCA.pem', 'utf8'),
-    cert: fs.readFileSync('.source/certificate/myCA.cer', 'utf8')
+    key: fs.readFileSync('./source/certificate/privateCA.pem', 'utf8'),
+    cert: fs.readFileSync('./source/certificate/myCA.cer', 'utf8')
 };
 var httpServer = http.createServer(app);
 var httpsServer = https.createServer(options, app);
@@ -81,7 +82,7 @@ httpServer.listen(httpPort, host, function () {
 
 
 app.get('/', function (req, res) {
-    res.sendFile(__dirname + "/" + "index.html");
+    res.sendFile(__dirname + "/" + "ipaList.html");
 })
 app.get('/index.html', function (req, res) {
     res.sendFile(__dirname + "/" + "index.html");
@@ -118,7 +119,7 @@ app.get('/list', function (req, res) {
         var resData = {
             'code': 0,
             'msg': '查询成功',
-            'data':JSON.stringify(result)
+            'data':result
         };
         res.end(JSON.stringify(resData));
     })

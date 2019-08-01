@@ -2,18 +2,142 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <!-- <script src="/dist/jquery.min.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+
+  <title>ipa 下载列表</title>
+
+
+  <style>
+    td {
+      text-align: center;
+    }
+  </style>
 </head>
 
 <body>
+  <div>
+    <a href="/index.html">上传地址</a>
     <a href="/myCA.cer">请先安装证书</a>
-    <br>
-    <br>
-    <a href="itms-services://?action=download-manifest&url=https://192.168.124.7:8886/store/2019-07-14-09-51-16/manifest.plist">
-        点击下载 </a>
+  </div>
+  </br>
+  </br>
+  <div id=tableView>
+      <button v-on:click="previoustPage">上一页</button>
+
+      <button v-on:click="nextPage">下一页</button>
+
+    <div v-html="tableHtml"></div>
+  </div>
+
+
+
+  <script>
+
+    function creatTable(data) {
+      var keyData = {
+        "id": "ID",
+        "name": "项目名称",
+        "version": "版本号",
+        "buildVersion": "构建版本号",
+        "description": "描述",
+        "resourceURL": "点击下载",
+        "date": "上传日期"
+      };
+      let _html = '';
+      data.map(ipaInfo => {
+        _html += `
+              <tr>
+                ${
+
+          Object.keys(keyData).map(key => {
+            let value = (ipaInfo[key] || '--');
+
+            if (key === "resourceURL") {
+              let url = `itms-services://?action=download-manifest&url=${value}`;
+              value = `<a href=${url}>下载</a>`;
+            }
+            return `<td> ${value}</td>`
+
+          }).join(' ')
+          }
+              </tr>
+            `
+      });
+      return ` <table>
+          <tr>  
+            ${ Object.keys(keyData).map(key => `<th>${keyData[key]}</th>`).join("")} 
+          </tr>
+          ${_html}
+          </table> `
+    }
+    new Vue({
+      el: '#tableView',
+      data: {
+        pageNum: 1,
+        pageSize:10,
+        currentData:[],
+        tableHtml: '',
+      },
+
+      methods: {
+        requestIPAList: function () {
+          axios
+            .get(`/list?pageSize=${this.pageSize}&pageNum=${this.pageNum}`)
+            .then(response => {
+              let jsonData = response.data;
+
+              if (jsonData == undefined || jsonData["code"] != 0) {
+                alert(
+                  jsonData["msg"] != undefined ? jsonData["msg"] : "请求错误，请检查"
+                );
+                return;
+              }
+              let data = jsonData["data"];
+              if (!Array.isArray(data)) {
+                alert("数据格式错误");
+                return;
+              }
+              this.currentData = data;
+              this.tableHtml = creatTable(data);
+              console.log(this.tableHtml);
+
+            })
+            .catch(function (error) { // 请求失败处理
+              console.log(error);
+              alert(JSON.stringify(error));
+            });
+        },
+        nextPage:function(){
+
+          if(this.currentData.length < this.pageSize){
+            alert("已经是最后一页了");
+            return;
+          }
+          this.pageNum += 1;
+          this.requestIPAList();
+        },
+
+        previoustPage:function(){
+          if(this.pageNum == 1){
+            alert("已经是第一页了");
+            return;
+          }
+          this.pageNum -= 1;
+          this.requestIPAList();
+        }
+      },
+      mounted() {
+        this.requestIPAList();
+      }
+    });
+
+  </script>
 </body>
 
 </html>

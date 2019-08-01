@@ -18,8 +18,8 @@ connection.connect(function callback(err) {
 function readListOfIpaInfo(pageNum,pageSize,cb){
   console.log('数据库读取 处理开始 '+'pageNum:'+ pageNum +'pageSize:'+ pageSize);
   let beginIndex = (pageNum - 1) * pageSize;
-  let endIndex = pageNum  * pageSize;
-  var readSql = 'SELECT * from info order by id desc limit ' + beginIndex + ',' +endIndex;
+  var readSql = 'SELECT * from info order by id desc limit ' + beginIndex + ',' +pageSize;
+
   connection.query(readSql, function (err, result) {
     if(err){
       console.log('[SELECT ERROR] - ', err.message);
