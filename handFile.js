@@ -93,7 +93,6 @@ function handleIPAInfo(destDir, file,cb) {
     let sourceFileAbsolutePath = path.join(__dirname, file.path);
     let destPath = path.join(destDir, file.originalname);
     let destAbsolutePath = path.join(__dirname, destPath);
-    console.log('移动ipa 开始'+ sourceFileAbsolutePath +'*****' + destAbsolutePath);
 
     fs.readFile(sourceFileAbsolutePath, function (err, data) {
         if (err) throw err;
@@ -101,7 +100,6 @@ function handleIPAInfo(destDir, file,cb) {
             if (err) throw err;
          
             fs.unlinkSync(sourceFileAbsolutePath);
-            console.log('移动ipa 123');
 
             cb(destPath);
        });

@@ -125,10 +125,10 @@ app.get('/list', function (req, res) {
     })
 
 })
-
+/** 
+ * 上传
+ * */
 app.post('/upload', upload.any(), function (req, res) {
-    // console.log('123' + util.inspect(req));
-
     var resData = {
         'code': -1,
         'msg': '上传失败'
@@ -136,6 +136,7 @@ app.post('/upload', upload.any(), function (req, res) {
     res.writeHead(200, {
         "Content-Type": "text/html;charset=utf-8"
     });
+
     if (req.files[0] == undefined) {
         resData = {
             'code': -1,
@@ -146,7 +147,11 @@ app.post('/upload', upload.any(), function (req, res) {
     }
     let currentDate = new Date().format("yyyy-MM-dd-hh-mm-ss");
     var destDir = path.join('store', currentDate);// 本地存储路径
-
+    let body = req.body;
+    let projectName = req.files[0].originalname;
+    let version = body.version;
+    let buildVersion = body.versionBuild;
+    let des = body.des || '啥也没写';
     // ipa
     handFile.handleIPAInfo(destDir, req.files[0], function (ipaPath) {
         if (!ipaPath) {
@@ -165,7 +170,8 @@ app.post('/upload', upload.any(), function (req, res) {
         // 数据库存储
         let plistURL = baseURL + '/' +plistPath;
 
-        sqlBusiness.saveIpaInfo('MAMTest', '2.5.4', '0.0.1', '就是版本提测啦', plistURL, currentDate, function (isSuccess) {
+        
+        sqlBusiness.saveIpaInfo(projectName, version, buildVersion, des, plistURL, currentDate, function (isSuccess) {
             if (isSuccess) {
                 console.log('上传成功');
 
