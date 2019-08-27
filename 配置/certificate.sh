@@ -9,7 +9,15 @@ else
     echo "为域名 ${CommonName} 生成 CA 证书" 
 fi
 
-cd ../source/certificate
+path="../source/certificate"
+
+if [ ! -d $path  ];then
+  mkdir $path
+else
+  echo dir exist
+fi
+
+cd $path
 
 # 私钥
 openssl genrsa -out privateCA.pem 2048
