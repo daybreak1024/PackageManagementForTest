@@ -1,0 +1,36 @@
+{
+  "name": "sites",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handFile.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "axios": "^0.19.0",
+    "bootstrap": "^4.3.1",
+    "cookie-parser": "^1.4.4",
+    "express": "^4.17.1",
+    "jquery": "^3.4.1",
+    "mysql": "^2.17.1",
+    "path": "^0.12.7",
+    "multer": "^1.4.1",
+    "myDate": "^1.0.2",
+    "plist": "^3.0.1",
+    "vue": "^2.6.10",
+    "xml2js": "^0.4.19",
+    "vuetify": "^2.0.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daybreak1024/PackageManagementForTest.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/daybreak1024/PackageManagementForTest/issues"
+  },
+  "homepage": "https://github.com/daybreak1024/PackageManagementForTest#readme"
+}
