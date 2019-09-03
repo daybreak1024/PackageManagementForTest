@@ -11,31 +11,31 @@
 					<key>kind</key>
 					<string>software-package</string>
 					<key>url</key>
-					<string>https://127.0.0.1/matest.ipa</string>
+					<string></string>
 				</dict>
 				<dict>
 					<key>kind</key>
 					<string>display-image</string>
 					<key>url</key>
-					<string>https://127.0.0.1/matest.ipa</string>
+					<string></string>
 				</dict>
 				<dict>
 					<key>kind</key>
 					<string>full-size-image</string>
 					<key>url</key>
-					<string>https://127.0.0.1/matest.ipa</string>
+					<string></string>
 				</dict>
 			</array>
 			<key>metadata</key>
 			<dict>
 				<key>bundle-identifier</key>
-				<string>com.napm.AppXC</string>
+				<string></string>
 				<key>bundle-version</key>
-				<string>2.5.3</string>
+				<string></string>
 				<key>kind</key>
-				<string>software</string>
+				<string></string>
 				<key>title</key>
-				<string>MAMTest</string>
+				<string></string>
 			</dict>
 		</dict>
 	</array>

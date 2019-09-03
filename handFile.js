@@ -112,7 +112,7 @@ function handleIPAInfo(destDir, file,cb) {
  * @param {string} destDir  存储目标相对位置
  * @param {string} ipaURL ipa 对应的下载位置
  */
-function handlePlist(destDir, ipaURL) {
+function handlePlist(destDir, ipaURL,title,version) {
     console.log('plist 处理开始');
 
     if (!checkDirAndMkdirIfNeed(destDir)) {
@@ -130,7 +130,9 @@ function handlePlist(destDir, ipaURL) {
 
     // 修改内容 
     jsonPlist.items[0].assets[0].url = ipaURL; // 修改 ipa 下载地址
-
+    jsonPlist.items[0].metadata["bundle-version"] = version; // version
+    jsonPlist.items[0].metadata.title = title; // title
+    
     // 转换为 plist
     var builder = plist.build(jsonPlist);
     // 存储
