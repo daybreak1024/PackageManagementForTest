@@ -66,6 +66,8 @@ var httpsServer = https.createServer(options, app);
 var host = getIPAdress();// 自己的 ip
 var httpsPort = 8886;
 var httpPort = 8888;
+
+var baseURL = '';
 // https
 httpsServer.listen(httpsPort, host, function () {
 
@@ -76,6 +78,7 @@ httpsServer.listen(httpsPort, host, function () {
 httpServer.listen(httpPort, host, function () {
 
     console.log("应用实例，访问地址为 http://%s:%s", host, httpPort)
+    baseURL = `https://${host}:${httpsPort}`;
 
 })
 
@@ -116,6 +119,11 @@ app.get('/list', function (req, res) {
             res.end(JSON.stringify(resData));
             return;
         }
+        // 动态处理下载列表中的域名地址-防止 ip 地址被更换
+        result.forEach(element => {
+            element.resourceURL = util.format(element.resourceURL,baseURL);
+        });
+        
         var resData = {
             'code': 0,
             'msg': '查询成功',
@@ -166,12 +174,11 @@ app.post('/upload', upload.any(), function (req, res) {
             return;
         }
         // plist
-        let baseURL = `https://${host}:${httpsPort}`;
         let ipaURL = baseURL + '/' + ipaPath;
         let plistPath = handFile.handlePlist(destDir, ipaURL,projectName,version)
 
-        // 数据库存储
-        let plistURL = baseURL + '/' +plistPath;
+        // 数据库存储的 plist 地址
+        let plistURL =  '%s/' +plistPath;
 
         
         sqlBusiness.saveIpaInfo(projectName, version, buildVersion, des, plistURL, currentDate, function (isSuccess) {

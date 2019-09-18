@@ -29,11 +29,11 @@
 			<key>metadata</key>
 			<dict>
 				<key>bundle-identifier</key>
-				<string></string>
+				<string>com.napm.AppXC</string>
 				<key>bundle-version</key>
 				<string></string>
 				<key>kind</key>
-				<string></string>
+				<string>software</string>
 				<key>title</key>
 				<string></string>
 			</dict>
