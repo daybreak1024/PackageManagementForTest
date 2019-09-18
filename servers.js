@@ -93,7 +93,9 @@ app.get('/index.html', function (req, res) {
 app.get('/ipaList.html', function (req, res) {
     res.sendFile(__dirname + "/" + "ipaList.html");
 })
-
+app.get('/secretRoot.html',function(req, res) {
+    res.sendFile(__dirname + "/" + "secretRoot.html");
+})
 /**
  * 读取列表
  * pageNum:num 
@@ -204,7 +206,27 @@ app.post('/upload', upload.any(), function (req, res) {
 
 
 })
+app.get("/uploadInfoPlist", function (req, res) {
+    var resData = {
+        'code': -1,
+        'msg': '参数错误'
+    };
+    res.writeHead(200, {
+        "Content-Type": "text/html;charset=utf-8"
+    });
+    let newHost = req.query.newHost;
+    if(newHost === undefined){
+        res.end(JSON.stringify(resData));
+        return;
+    }
+    handFile.updatedInfoPlistUrl(newHost);
+    resData = {
+        'code': 0000,
+        'msg': '处理成功'
+    };
+    res.end(JSON.stringify(resData));
 
+})
 /*
    {
        fieldname: 'image',

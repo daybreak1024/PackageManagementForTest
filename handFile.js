@@ -1,9 +1,9 @@
 var path = require('path');
 var fs = require("fs");
 var plist = require('plist');
+var URL = require('url');
 
-
-// 存储路径
+let plistFileName = 'manifest.plist';
 
 /**
  * 读取路径信息
@@ -120,7 +120,6 @@ function handlePlist(destDir, ipaURL,title,version) {
     };
 
     // 处理 plist
-    let plistFileName = 'manifest.plist';
     let plistSourceAbsolutePath = path.join(__dirname, 'source', 'plist', plistFileName); // 原始相对路径
 
     // 读取 plist
@@ -146,10 +145,39 @@ function handlePlist(destDir, ipaURL,title,version) {
 module.exports = {
     handleIPAInfo: handleIPAInfo,
     handlePlist: handlePlist,
-
+    updatedInfoPlistUrl:updatedInfoPlistUrl,
 }
+/**
+ * 在本机 IP 被修改后可以通过此接口进行 infoPlist 中域名的全部替换
+ */
+function updatedInfoPlistUrl(newHost){
+    let dirPath = path.join(__dirname,"store");
+    var pa = fs.readdirSync(dirPath);
+	pa.forEach(function(ele){
+        let subDirPath = path.join(dirPath,ele);
+		var info = fs.statSync(subDirPath);	
+		if(info.isDirectory()){
+            let infoPlistPath =  path.join(subDirPath,plistFileName);;
+            updatedInfoPlistUrlWith(newHost,infoPlistPath);
+		}	
+	});
+}
+function updatedInfoPlistUrlWith(newHost,filePath){
+// 读取 plist
+let plistFile = fs.readFileSync(filePath, 'utf8')
+// 解析为 json  「jsonPlist 的内容」看最下面
+let jsonPlist = plist.parse(plistFile);
 
+// 修改内容 
+let oldUrlString = jsonPlist.items[0].assets[0].url;
+let url = URL.parse(oldUrlString);
+let newURLString = url.protocol +"//" + newHost + ":"+ url.port +url.path ;
+jsonPlist.items[0].assets[0].url = newURLString;
+// 转换为 plist
+let builder = plist.build(jsonPlist);
 
+fs.writeFileSync(filePath, builder);
+}
 /**  jsonPlist 的内容
    "items": [
        {
