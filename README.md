@@ -37,7 +37,7 @@
 1. `manifest.plist`：这是用来告诉设备从哪里下载 ipa，以及 ipa 的部分信息的文件。[存储位置 ` ./source/plist/manifest.plist`](./source/plist/manifest.plist)。
 2. `证书`：因为苹果的要求下载必须使用 https，所以需要根据【服务器】的 ip 生成对应的 CA 证书（PS：本项目生成的是 CA 根证书）。
 3. `服务`：使用的 nodeJS。用来处理上传的 ipa 的信息记录和存储规划；对应的列表用来展示下载；证书的下发。
-4. `mySql`：用来存储、读取 ipa 的相关信息。
+4. `数据库`：用来存储、读取 ipa 的相关信息。
 
 ## 流程图
 

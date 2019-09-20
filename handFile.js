@@ -142,11 +142,7 @@ function handlePlist(destDir, ipaURL,title,version) {
 
     return plistDestPath;
 }
-module.exports = {
-    handleIPAInfo: handleIPAInfo,
-    handlePlist: handlePlist,
-    updatedInfoPlistUrl:updatedInfoPlistUrl,
-}
+
 /**
  * 在本机 IP 被修改后可以通过此接口进行 infoPlist 中域名的全部替换
  */
@@ -205,3 +201,11 @@ fs.writeFileSync(filePath, builder);
    ]
 }
     */
+
+   module.exports = {
+    handleIPAInfo: handleIPAInfo,
+    handlePlist: handlePlist,
+    updatedInfoPlistUrl:updatedInfoPlistUrl,
+
+    dirExists:dirExists,
+}

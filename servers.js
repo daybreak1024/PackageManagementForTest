@@ -52,7 +52,6 @@ function getIPAdress() {
 // express
 app.use(express.static(__dirname + '/source/certificate'));
 app.use('/store',express.static(__dirname + '/store'));
-app.use(express.static(__dirname + '/node_modules/jquery'));
 
 
 let options = {
