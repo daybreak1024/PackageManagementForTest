@@ -1,94 +1,105 @@
 <!DOCTYPE html>
-<html >
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
 
     <title>上传 ipa</title>
 
-<style>
-    input:focus,textarea:focus {
+    <style>
+      input:focus,
+      textarea:focus {
+        border: 1px solid #f60;
+      }
+      input[type="text"] {
+        margin: 8px 0;
+      }
+      textarea {
+        margin-left: 12px;
+      }
+      textarea,
+      input[type="text"] {
+        outline: none;
+        width: 350px;
+        padding: 8px 8px;
 
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      input[type="submit"] {
+        background-color: #3198f7;
+        color: white;
+        width: 400px;
+        padding: 14px 20px;
+        margin: 8px 0;
+        margin-left: 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      #choseFileLabel:hover,
+      input[type="submit"]:hover {
+        background-color: rgb(33, 99, 161);
+      }
+      input[type="file"] {
+        width: 0.1px;
+        height: 0.1px;
+        opacity: 0;
+        overflow: hidden;
+        position: absolute;
+        z-index: -1;
+      }
+      #choseFileLabel {
+        color: white;
+        background-color: #3198f7;
+        display: inline-block;
+        border: none;
+        border-radius: 4px;
+        padding: 7px 10px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
 
-border: 1px solid #f60;
-
-}
-input[type=text] {
-    margin: 8px 0;
-}
-textarea{
-    margin-left: 12px;
-}
-textarea,input[type=text] {
-    outline: none;
-    width: 350px;
-    padding: 8px 8px;
-    
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-input[type=submit] {
-  background-color: #3198F7;
-  color: white;
-  width: 400px;
-  padding: 14px 20px;
-  margin: 8px 0;
-  margin-left: 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-#choseFileLabel:hover, input[type=submit]:hover {
-  background-color: rgb(33, 99, 161);
-}
-input[type=file] {
-  width: 0.1px;
-  height: 0.1px;
-  opacity: 0;
-  overflow: hidden;
-  position: absolute;
-  z-index: -1;
-}
-#choseFileLabel{
-    color: white;
-    background-color: #3198F7;
-    display: inline-block;
-    border: none;
-    border-radius: 4px;
-    padding: 7px 10px;
-    cursor: pointer;
-}
-</style>
-
-</head>
-
-<body>
+  <body>
     <h3>文件上传</h3>
-   
+
     <form action="/upload" method="post" enctype="multipart/form-data">
-        <label id="choseFileLabel" for="choseFile">选择一个 ipa</label><br>
-        <input type="file" name="uploadFile" id="choseFile" /> <br>
+      <label id="choseFileLabel" for="choseFile">选择一个 ipa</label><br />
+      <input type="file" name="uploadFile" id="choseFile" /> <br />
 
+      <label for="version">版本号：</label>
+      <input
+        type="text"
+        name="version"
+        value=""
+        placeholder="请输入版本号"
+        id="version"
+      /><br />
 
-        <label for="version">版本号：</label>
-        <input type="text" name="version" value="" placeholder="请输入版本号" id="version"/><br>
+      <label for="versionBuild">构建号：</label>
+      <input
+        type="text"
+        name="versionBuild"
+        value=""
+        placeholder="请输入 Build 号"
+        id="versionBuild"
+      /><br />
 
-        <label for="versionBuild">构建号：</label>
-        <input type="text" name="versionBuild" value="" placeholder="请输入 Build 号" id="versionBuild"/><br>
+      <label for="des" style="top: 0px">描 述：</label>
+      <textarea
+        name="des"
+        cols="50"
+        rows="10"
+        placeholder="请输入改包的相关备注信息"
+      ></textarea
+      ><br /><br />
 
-        
-        <label for="des" style="top: 0px">描  述：</label>
-        <textarea  name="des" cols="50" rows="10" placeholder="请输入改包的相关备注信息"></textarea><br><br>
-
-        <input type="submit" value="上传文件" />
-        
-
+      <input type="submit" value="上传文件" />
     </form>
-</body>
-
+  </body>
 </html>

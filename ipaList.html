@@ -1,177 +1,184 @@
 <!DOCTYPE html>
-<html >
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
-  <script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css"
+      rel="stylesheet"
+    />
 
-  <title>ipa 下载列表</title>
-  <style>
-    .top{
-      margin-left: 20px;
-      margin-top:20px;
-    }
-    td {
-      text-align: center;
-      padding:1px;
-    }
-    th {
-      font-size:1.1em;
-	    text-align:center;
-	    padding-top:5px;
-	    padding-bottom:4px;
-	    background-color:#A7C942;
-	    color:#ffffff;
-    }
-    table{
-      margin: 20px;
-      border-collapse:collapse;
-      /* display: block; */
-      /* width:100%; */
-      width:calc(100vw - 40px);
-    }
-    th, td{
-      border: 1px solid #3198F7;
-      padding:3px 7px 2px 7px;
-    }
-    tr.alt{
-    	background-color:#EAF2D3;
-    }
-    button{
-      margin-left: 20px;
-      margin-right: 20px;
-      color:#3198F7;
-    }
-    button:hover{
-    color: #FF704D;
-    }
-    a:link {color:#3198F7;}
-    a:visited {color: #3198F7;}
-    a:hover {color:#FF704D;}
-    a:active {color:#FF704D;}
-    
-  </style>
-</head>
+    <title>ipa 下载列表</title>
+    <style>
+      .top {
+        margin-left: 20px;
+        margin-top: 20px;
+      }
+      td {
+        text-align: center;
+        padding: 1px;
+      }
+      th {
+        font-size: 1.1em;
+        text-align: center;
+        padding-top: 5px;
+        padding-bottom: 4px;
+        background-color: #a7c942;
+        color: #ffffff;
+      }
+      table {
+        margin: 20px;
+        border-collapse: collapse;
+        /* display: block; */
+        /* width:100%; */
+        width: calc(100vw - 40px);
+      }
+      th,
+      td {
+        border: 1px solid #3198f7;
+        padding: 3px 7px 2px 7px;
+      }
+      tr.alt {
+        background-color: #eaf2d3;
+      }
+      button {
+        margin-left: 20px;
+        margin-right: 20px;
+        color: #3198f7;
+      }
+      button:hover {
+        color: #ff704d;
+      }
+      a:link {
+        color: #3198f7;
+      }
+      a:visited {
+        color: #3198f7;
+      }
+      a:hover {
+        color: #ff704d;
+      }
+      a:active {
+        color: #ff704d;
+      }
+    </style>
+  </head>
 
-<body>
-  <div class="top">
-    <a  href="/upload.html">上传地址</a>
-    <a  href="/myCA.cer">请先安装证书</a>
-  </div>
-  <div id=tableView>
+  <body>
+    <div class="top">
+      <a href="/upload.html">上传地址</a>
+      <a href="/myCA.cer">请先安装证书</a>
+    </div>
+    <div id="tableView">
       <div v-html="tableHtml"></div>
 
       <button v-on:click="previoustPage">上一页</button>
       <button v-on:click="nextPage" style="float:right;">下一页</button>
+    </div>
 
-  </div>
-
-
-
-  <script>
-
-    function creatTable(data) {
-      var keyData = {
-        "id": "ID",
-        "name": "项目名称",
-        "version": "版本号",
-        "buildVersion": "构建版本号",
-        "description": "描述",
-        "resourceURL": "点击下载",
-        "date": "上传日期"
-      };
-      let _html = '';
-      data.map((ipaInfo , index)=> {
-        _html += `
-          ${((index %2) == 0)? `<tr>` : `<tr class="alt">` }
-          ${
-            Object.keys(keyData).map(key => {
-              let value = (ipaInfo[key] || '--');
+    <script>
+      function creatTable(data) {
+        var keyData = {
+          id: "ID",
+          name: "项目名称",
+          version: "版本号",
+          buildVersion: "构建版本号",
+          description: "描述",
+          resourceURL: "点击下载",
+          date: "上传日期"
+        };
+        let _html = "";
+        data.map((ipaInfo, index) => {
+          _html += `
+          ${index % 2 == 0 ? `<tr>` : `<tr class="alt">`}
+          ${Object.keys(keyData)
+            .map(key => {
+              let value = ipaInfo[key] || "--";
 
               if (key === "resourceURL") {
                 let url = `itms-services://?action=download-manifest&url=${value}`;
                 value = `<a href=${url}>下载</a>`;
               }
-              return `<td> ${value}</td>`
-
-            }).join(' ')
-          }
+              return `<td> ${value}</td>`;
+            })
+            .join(" ")}
               </tr>
-            `
-      });
-      console.log(_html);
-      return ` <table>
+            `;
+        });
+        console.log(_html);
+        return ` <table>
           <tr>  
-            ${ Object.keys(keyData).map(key => `<th>${keyData[key]}</th>`).join("")} 
+            ${Object.keys(keyData)
+              .map(key => `<th>${keyData[key]}</th>`)
+              .join("")} 
           </tr>
           ${_html}
-          </table> `
-    }
-    new Vue({
-      el: '#tableView',
-      data: {
-        pageNum: 1,
-        pageSize:10,
-        currentData:[],
-        tableHtml: '',
-      },
-
-      methods: {
-        requestIPAList: function () {
-          axios
-            .get(`/list?pageSize=${this.pageSize}&pageNum=${this.pageNum}`)
-            .then(response => {
-              let jsonData = response.data;
-
-              if (jsonData == undefined || jsonData["code"] != 0) {
-                alert(
-                  jsonData["msg"] != undefined ? jsonData["msg"] : "请求错误，请检查"
-                );
-                return;
-              }
-              let data = jsonData["data"];
-              if (!Array.isArray(data)) {
-                alert("数据格式错误");
-                return;
-              }
-              this.currentData = data;
-              this.tableHtml = creatTable(data);
-              console.log(this.tableHtml);
-
-            })
-            .catch(function (error) { // 请求失败处理
-              console.log(error);
-              alert(JSON.stringify(error));
-            });
-        },
-        nextPage:function(){
-
-          if(this.currentData.length < this.pageSize){
-            alert("已经是最后一页了");
-            return;
-          }
-          this.pageNum += 1;
-          this.requestIPAList();
+          </table> `;
+      }
+      new Vue({
+        el: "#tableView",
+        data: {
+          pageNum: 1,
+          pageSize: 10,
+          currentData: [],
+          tableHtml: ""
         },
 
-        previoustPage:function(){
-          if(this.pageNum == 1){
-            alert("已经是第一页了");
-            return;
+        methods: {
+          requestIPAList: function() {
+            axios
+              .get(`/list?pageSize=${this.pageSize}&pageNum=${this.pageNum}`)
+              .then(response => {
+                let jsonData = response.data;
+
+                if (jsonData == undefined || jsonData["code"] != 0) {
+                  alert(
+                    jsonData["msg"] != undefined
+                      ? jsonData["msg"]
+                      : "请求错误，请检查"
+                  );
+                  return;
+                }
+                let data = jsonData["data"];
+                if (!Array.isArray(data)) {
+                  alert("数据格式错误");
+                  return;
+                }
+                this.currentData = data;
+                this.tableHtml = creatTable(data);
+                console.log(this.tableHtml);
+              })
+              .catch(function(error) {
+                // 请求失败处理
+                console.log(error);
+                alert(JSON.stringify(error));
+              });
+          },
+          nextPage: function() {
+            if (this.currentData.length < this.pageSize) {
+              alert("已经是最后一页了");
+              return;
+            }
+            this.pageNum += 1;
+            this.requestIPAList();
+          },
+
+          previoustPage: function() {
+            if (this.pageNum == 1) {
+              alert("已经是第一页了");
+              return;
+            }
+            this.pageNum -= 1;
+            this.requestIPAList();
           }
-          this.pageNum -= 1;
+        },
+        mounted() {
           this.requestIPAList();
         }
-      },
-      mounted() {
-        this.requestIPAList();
-      }
-    });
-
-  </script>
-</body>
-
+      });
+    </script>
+  </body>
 </html>
