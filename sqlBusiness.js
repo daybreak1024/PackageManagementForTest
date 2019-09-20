@@ -1,26 +1,43 @@
-var mysql  = require('mysql');
+var sqlite3 = require('sqlite3');
+var handFile = require('./handFile');
 
+
+let dbPath = './dataBase'
+// 创建 db 存储路径
+handFile.dirExists(dbPath);
 // sql 初始化
-var connection = mysql.createConnection({
-  user: 'root',
-  password: 'daybreak',
-  database: 'ipaInfo',
-  insecureAuth: true,
-  dateStrings: true,
+var db = new sqlite3.Database(dbPath + '/ipainfo.db',function(err) {
+  if(err){
+      console.log('[INSERT ERROR] - DB打开失败 : ' + err);
+      return;
+  }
+  let createTableSql = `
+    CREATE TABLE IF NOT EXISTS info (
+        id INTEGER PRIMARY KEY   AUTOINCREMENT,
+        name         TEXT  NOT NULL,
+        version      TEXT  NOT NULL,
+        buildVersion TEXT  NOT NULL,
+        description  TEXT  NOT NULL,
+        resourceURL  TEXT  NOT NULL,
+        date         TEXT  NOT NULL
+        )
+  `
+    db.run(createTableSql,function(err){
+        if(err){
+            console.log('[INSERT ERROR] - DB打开失败 : ' + err);
+        }
+    });
+  
 });
 
-connection.connect(function callback(err) {
-  if (err) {
-      return console.log('[INSERT ERROR] - ', err.message);
-  }
-});
+
 
 function readListOfIpaInfo(pageNum,pageSize,cb){
   console.log('数据库读取 处理开始 '+'pageNum:'+ pageNum +'pageSize:'+ pageSize);
   let beginIndex = (pageNum - 1) * pageSize;
-  var readSql = 'SELECT * from info order by id desc limit ' + beginIndex + ',' +pageSize;
+  var readSql = 'SELECT * from info order by id desc limit ' + beginIndex + ',' +pageSize;    
 
-  connection.query(readSql, function (err, result) {
+  db.all(readSql, function (err, result) {
     if(err){
       console.log('[SELECT ERROR] - ', err.message);
       cb(false);
@@ -34,13 +51,14 @@ function readListOfIpaInfo(pageNum,pageSize,cb){
   });
 
 }
+
 function saveIpaInfo(name, version, buildVersion, description, resourceURL, date, cb) {
   console.log('数据库存储 处理开始');
 
-  var addSql = 'INSERT INTO info(id,name,version,buildVersion,description,resourceURL,date) VALUES(0,?,?,?,?,?,?)';
+  var addSql = 'INSERT INTO info(name,version,buildVersion,description,resourceURL,date) VALUES(?,?,?,?,?,?)';
   var addSqlParams = [name, version, buildVersion, description, resourceURL, date];
   //增
-  connection.query(addSql, addSqlParams, function (err, result) {
+  db.run(addSql, addSqlParams, function (err) {
 
       if (err) {
           console.log('[INSERT ERROR] - ', err.message);
@@ -49,7 +67,7 @@ function saveIpaInfo(name, version, buildVersion, description, resourceURL, date
       }
 
       console.log('--------------------------INSERT----------------------------');
-      console.log('INSERT ID:', result);
+      console.log('INSERT SUCCESS');
       console.log('-----------------------------------------------------------------\n\n');
 
       cb(true)
