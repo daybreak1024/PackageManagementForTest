@@ -22,12 +22,12 @@
 
 * 待处理 ：
     1. 更新证书。
-    2. 本地的 infoPlist 中的下载地址进行更新。
+    2. 更新本地的 plist 文件中的下载地址。
 
 * 处理方式：
 
     1. 证书更新：使用`./配置/certificate.sh`脚本重新生成即可，使用设备需要进行新证书的安装。
-    2. infoPlist 修改：打开 `./secretRoot.html`,输入新的 url 即可完成修改。
+    2. plist 修改：打开 `/secretRoot.html`,输入新的 `host (eg. 192.169.12.6) ` 即可完成修改。
 
 
 
