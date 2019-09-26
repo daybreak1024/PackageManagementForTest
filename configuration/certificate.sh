@@ -9,7 +9,7 @@ else
     echo "为域名 ${CommonName} 生成 CA 证书" 
 fi
 
-path="../source/certificate"
+path="./source/certificate"
 
 if [ ! -d $path  ];then
   mkdir $path
