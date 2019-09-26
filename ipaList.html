@@ -6,6 +6,11 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
     <script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+    <script
+      type="text/javascript"
+      src="//static.runoob.com/assets/qrcode/qrcode.min.js"
+    ></script>
+
     <link
       href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css"
       rel="stylesheet"
@@ -77,8 +82,11 @@
 
       <button v-on:click="previoustPage">上一页</button>
       <button v-on:click="nextPage" style="float:right;">下一页</button>
-    </div>
 
+    </div>
+    <div id="qrcodeHandle"  >
+        <div v-if="isMobile"  id="qrcode" style="margin: 20px;"> 手机扫码下载：</div>
+    </div>
     <script>
       function creatTable(data) {
         var keyData = {
@@ -108,7 +116,6 @@
               </tr>
             `;
         });
-        console.log(_html);
         return ` <table>
           <tr>  
             ${Object.keys(keyData)
@@ -149,7 +156,6 @@
                 }
                 this.currentData = data;
                 this.tableHtml = creatTable(data);
-                console.log(this.tableHtml);
               })
               .catch(function(error) {
                 // 请求失败处理
@@ -165,7 +171,6 @@
             this.pageNum += 1;
             this.requestIPAList();
           },
-
           previoustPage: function() {
             if (this.pageNum == 1) {
               alert("已经是第一页了");
@@ -179,6 +184,33 @@
           this.requestIPAList();
         }
       });
+      var qrcodeHandle = new Vue({
+        el:"#qrcodeHandle",
+        data: {
+          isMobile: true
+        },
+        methods: {
+          createQRIfNeed: function() {
+            if ( !navigator.userAgent.match( /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i ) ) {
+              this.isMobile = true;
+              var url = document.URL;
+              var qrcode = new QRCode("qrcode", {
+                text: url,
+                width: 128,
+                height: 128,
+                colorDark: "#3198f7",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+              });
+            }else{
+              this.isMobile = false;
+            }
+          }
+        },
+        mounted () {
+          this.createQRIfNeed();
+        }
+      })
     </script>
   </body>
 </html>
