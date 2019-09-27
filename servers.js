@@ -62,7 +62,7 @@ function getIPAdress() {
 // express
 app.use(express.static(__dirname + "/source/certificate"));
 app.use("/store", express.static(__dirname + "/store"));
-
+app.use("/node_modules", express.static(__dirname + "/node_modules"));
 let options = {
   key: fs.readFileSync("./source/certificate/privateCA.pem", "utf8"),
   cert: fs.readFileSync("./source/certificate/myCA.cer", "utf8")
