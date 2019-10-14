@@ -1,0 +1,94 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    font-size: 15px;
+}
+
+.nav li a {
+    display: block;
+    height: var(--nav-height);
+    text-align: center;
+    line-height: var(--nav-height);
+    color: #ff704d;
+    background: #eaf2d3;
+    border-radius: 8px 8px 0px 0px;
+    width: 110px;
+    margin-left: 10px;
+}
+
+.nav {
+    --nav-height: 30px;
+    --border-height: 3px;
+    list-style: none;
+    margin: 20px 20px 0px;
+    height: calc(var(--border-height) + var(--nav-height));
+    border-bottom: var(--border-height) solid #a7c942;
+}
+
+.nav li {
+    float: left;
+}
+
+.nav li a:hover {
+    background: #a7c942
+}
+
+td {
+    text-align: center;
+    padding: 1px;
+}
+
+th {
+    font-size: 1.1em;
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 4px;
+    background-color: #a7c942;
+    color: #ffffff;
+}
+
+#tableView {
+    margin: 20px 20px 0px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    border: 1px solid #3198f7;
+    padding: 3px 7px 2px 7px;
+}
+
+tr.alt {
+    background-color: #eaf2d3;
+}
+
+button {
+    color: #3198f7;
+}
+
+button:hover {
+    color: #ff704d;
+}
+
+/* a 标签 全局设置 */
+
+a {
+    text-decoration: none;
+    color: #3198f7;
+}
+
+a:link {
+    color: #3198f7;
+}
+
+a:visited {
+    color: #ff704d;
+}
+
+a:hover {
+    color: #ff704d;
+}

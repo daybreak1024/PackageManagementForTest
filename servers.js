@@ -63,6 +63,8 @@ function getIPAdress() {
 app.use(express.static(__dirname + "/source/certificate"));
 app.use("/store", express.static(__dirname + "/store"));
 app.use("/node_modules", express.static(__dirname + "/node_modules"));
+app.use(express.static(__dirname + "/Fornt"));
+
 let options = {
   key: fs.readFileSync("./source/certificate/privateCA.pem", "utf8"),
   cert: fs.readFileSync("./source/certificate/myCA.cer", "utf8")
@@ -86,7 +88,7 @@ httpServer.listen(httpPort, host, function() {
 });
 
 app.get("/", function(req, res) {
-  res.sendFile(__dirname + "/" + "ipaList.html");
+  res.sendFile(__dirname + "/" + "Fornt/download/HTML/ipaList.html");
 });
 app.get("/upload.html", function(req, res) {
   res.sendFile(__dirname + "/" + "upload.html");
