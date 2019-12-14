@@ -45,6 +45,7 @@
             };
             let _html = "";
             data.map((ipaInfo, index) => {
+                // TODO: 安卓不需要拼接itms-services:
                     _html += `
                           ${index % 2 == 0 ? `<tr>` : `<tr class="alt">`}
                           ${Object.keys(keyData).map(key => {
@@ -76,7 +77,7 @@
             methods: {
                 requestIPAList: function() {
                     axios
-                        .get(`/list?pageSize=${this.pageSize}&pageNum=${this.pageNum}`)
+                        .get(`/list${location.search}&pageSize=${this.pageSize}&pageNum=${this.pageNum}`)
                         .then(response => {
                             let jsonData = response.data;
 

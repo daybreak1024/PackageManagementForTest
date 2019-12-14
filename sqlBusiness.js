@@ -13,6 +13,8 @@ var db = new sqlite3.Database(dbPath + "/ipainfo.db", function(err) {
   let createTableSql = `
     CREATE TABLE IF NOT EXISTS info (
         id INTEGER PRIMARY KEY   AUTOINCREMENT,
+        identifier   TEXT  NOT NULL,
+        os           TEXT  NOT NULL,
         name         TEXT  NOT NULL,
         version      TEXT  NOT NULL,
         buildVersion TEXT  NOT NULL,
@@ -28,14 +30,18 @@ var db = new sqlite3.Database(dbPath + "/ipainfo.db", function(err) {
   });
 });
 
-function readListOfIpaInfo(pageNum, pageSize, cb) {
+function readListOfIpaInfo(projectName,os, pageNum, pageSize, cb) {
   console.log(
-    "数据库读取 处理开始 " + "pageNum:" + pageNum + "pageSize:" + pageSize
+    "数据库读取 处理开始 " + " projectName:" + projectName + " os:" + os + " pageNum:" + pageNum + " pageSize:" + pageSize
   );
   let beginIndex = (pageNum - 1) * pageSize;
+  let whereCondition = " WHERE name=" + "\"" +projectName + "\"" + " AND os="+ "\"" +os+ "\"" 
+  let limit = " order by id desc limit " + beginIndex + "," + pageSize
   var readSql =
-    "SELECT * from info order by id desc limit " + beginIndex + "," + pageSize;
-
+    "SELECT * FROM info "  + whereCondition + limit;
+    console.log(
+      "数据库读取 sql " + readSql
+    );
   db.all(readSql, function(err, result) {
     if (err) {
       console.log("[SELECT ERROR] - ", err.message);
@@ -53,6 +59,8 @@ function readListOfIpaInfo(pageNum, pageSize, cb) {
 }
 
 function saveIpaInfo(
+  identifier,
+  os,
   name,
   version,
   buildVersion,
@@ -64,8 +72,10 @@ function saveIpaInfo(
   console.log("数据库存储 处理开始");
 
   var addSql =
-    "INSERT INTO info(name,version,buildVersion,description,resourceURL,date) VALUES(?,?,?,?,?,?)";
+    "INSERT INTO info(identifier,os,name,version,buildVersion,description,resourceURL,date) VALUES(?,?,?,?,?,?,?,?)";
   var addSqlParams = [
+    identifier,
+    os,
     name,
     version,
     buildVersion,
@@ -73,6 +83,7 @@ function saveIpaInfo(
     resourceURL,
     date
   ];
+  console.log(addSqlParams.join("--"))
   //增
   db.run(addSql, addSqlParams, function(err) {
     if (err) {

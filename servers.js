@@ -88,13 +88,15 @@ httpServer.listen(httpPort, host, function() {
 });
 
 app.get("/", function(req, res) {
-  res.sendFile(__dirname + "/" + "Fornt/download/HTML/ipaList.html");
+  res.sendFile(__dirname + "/" + "projectList.html");
+
+  //
 });
 app.get("/upload.html", function(req, res) {
   res.sendFile(__dirname + "/" + "upload.html");
 });
 app.get("/ipaList.html", function(req, res) {
-  res.sendFile(__dirname + "/" + "ipaList.html");
+  res.sendFile(__dirname + "/" + "Fornt/download/HTML/ipaList.html");
 });
 app.get("/secretRoot.html", function(req, res) {
   res.sendFile(__dirname + "/" + "secretRoot.html");
@@ -112,17 +114,23 @@ app.get("/list", function(req, res) {
   res.writeHead(200, {
     "Content-Type": "text/html;charset=utf-8"
   });
+  let pageNum = req.query.pageNum;
+  let pageSize = req.query.pageSize;
+  let project = req.query.project;
+  let os = req.query.os;
   if (
-    !(req.query.pageNum && req.query.pageNum > 0) ||
-    !(req.query.pageSize && req.query.pageSize > 0)
+    !(os && os.length > 0) ||
+    !(project && project.length > 0) ||
+    !(pageNum && pageNum > 0) ||
+    !(pageSize && pageSize > 0)
   ) {
     res.end(JSON.stringify(resData));
     return;
   }
 
-  let pageNum = req.query.pageNum;
-  let pageSize = req.query.pageSize;
-  sqlBusiness.readListOfIpaInfo(pageNum, pageSize, function(result) {
+  sqlBusiness.readListOfIpaInfo(project, os, pageNum, pageSize, function(
+    result
+  ) {
     if (!result) {
       res.end(JSON.stringify(resData));
       return;
@@ -160,18 +168,18 @@ app.post("/upload", upload.any(), function(req, res) {
     res.end(JSON.stringify(resData));
     return;
   }
+  console.log(req);
+  let projectName = req.query.project;
+  let os = req.query.os;
+  let identifier = req.query.identifier;
   let currentDate = new Date().format("yyyy-MM-dd-hh-mm-ss");
   var destDir = path.join("store", currentDate); // 本地存储路径
   let body = req.body;
   let version = body.version;
   let buildVersion = body.versionBuild;
   let des = body.des || "啥也没写";
-  // 获取文件名
-  let projectName = req.files[0].originalname;
-  let extension = path.extname(projectName);
-  projectName = path.basename(projectName, extension);
-  // ipa
-  handFile.handleIPAInfo(destDir, req.files[0], function(ipaPath) {
+  // 移动安装包
+  handFile.handleInstallationPackage(destDir, req.files[0], function(ipaPath) {
     if (!ipaPath) {
       resData = {
         code: -1,
@@ -180,14 +188,24 @@ app.post("/upload", upload.any(), function(req, res) {
       res.end(JSON.stringify(resData));
       return;
     }
-    // plist
-    let ipaURL = baseURL + "/" + ipaPath;
-    let plistPath = handFile.handlePlist(destDir, ipaURL, projectName, version);
-
     // 数据库存储的 plist 地址
-    let plistURL = "%s/" + plistPath;
+    let plistURL = "";
+    // infoPlist
+    if (os == "iOS") {
+      let ipaURL = baseURL + "/" + ipaPath;
+      let plistPath = handFile.handlePlist(
+        destDir,
+        ipaURL,
+        projectName,
+        version,
+        identifier
+      );
+      plistURL = "%s/" + plistPath;
+    }
 
     sqlBusiness.saveIpaInfo(
+      identifier,
+      os,
       projectName,
       version,
       buildVersion,
