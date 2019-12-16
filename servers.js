@@ -178,8 +178,8 @@ app.post("/upload", upload.any(), function(req, res) {
   let buildVersion = body.versionBuild;
   let des = body.des || "啥也没写";
   // 移动安装包
-  handFile.handleInstallationPackage(destDir, req.files[0], function(ipaPath) {
-    if (!ipaPath) {
+  handFile.handleInstallationPackage(destDir, req.files[0], function(filePath) {
+    if (!filePath) {
       resData = {
         code: -1,
         msg: "服务器，ipa 文件处理失败"
@@ -188,18 +188,19 @@ app.post("/upload", upload.any(), function(req, res) {
       return;
     }
     // 数据库存储的 plist 地址
-    let plistURL = "";
+    let fileURLPath = baseURL + "/" + filePath;
     // infoPlist
     if (os == "iOS") {
-      let ipaURL = baseURL + "/" + ipaPath;
       let plistPath = handFile.handlePlist(
         destDir,
-        ipaURL,
+        fileURLPath,
         projectName,
         version,
         identifier
       );
-      plistURL = "%s/" + plistPath;
+      fileURLPath = "%s/" + plistPath;
+      console.log(fileURLPath)
+      console.log(plistPath)
     }
 
     sqlBusiness.saveIpaInfo(
@@ -209,7 +210,7 @@ app.post("/upload", upload.any(), function(req, res) {
       version,
       buildVersion,
       des,
-      plistURL,
+      fileURLPath,
       currentDate,
       function(isSuccess) {
         if (isSuccess) {
