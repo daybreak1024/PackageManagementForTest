@@ -83,7 +83,6 @@ function saveIpaInfo(
     resourceURL,
     date
   ];
-  console.log(addSqlParams.join("--"))
   //增
   db.run(addSql, addSqlParams, function(err) {
     if (err) {

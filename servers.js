@@ -168,7 +168,6 @@ app.post("/upload", upload.any(), function(req, res) {
     res.end(JSON.stringify(resData));
     return;
   }
-  console.log(req);
   let projectName = req.query.project;
   let os = req.query.os;
   let identifier = req.query.identifier;
