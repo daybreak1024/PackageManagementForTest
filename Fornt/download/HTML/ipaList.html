@@ -16,10 +16,6 @@
     ></script>
 
     <link rel="stylesheet" href="/download/CSS/ipaList.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css"
-    />
 
     <title>ipa 下载列表</title>
   </head>
@@ -56,7 +52,6 @@
         };
         let _html = "";
         data.map((ipaInfo, index) => {
-          // TODO: 安卓不需要拼接itms-services:
           _html += `
                           ${index % 2 == 0 ? `<tr>` : `<tr class="alt">`}
                           ${Object.keys(keyData)

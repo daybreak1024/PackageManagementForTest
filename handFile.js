@@ -157,8 +157,6 @@ function updatedInfoPlistUrl(newHost) {
   pa.forEach(function(ele) {
     let subDirPath = path.join(dirPath, ele);
     var info = fs.statSync(subDirPath);
-		var info = fs.statSync(subDirPath);	
-    var info = fs.statSync(subDirPath);
     if (info.isDirectory()) {
       let infoPlistPath = path.join(subDirPath, plistFileName);
       updatedInfoPlistUrlWith(newHost, infoPlistPath);
@@ -166,7 +164,11 @@ function updatedInfoPlistUrl(newHost) {
   });
 }
 
-function updatedInfoPlistUrlWith(newHost, filePath) {
+async function updatedInfoPlistUrlWith(newHost, filePath) {
+  let isExists = await getStat(filePath);
+  if (!isExists){
+    return;
+  }
   // 读取 plist
   let plistFile = fs.readFileSync(filePath, "utf8");
   // 解析为 json  「jsonPlist 的内容」看最下面
