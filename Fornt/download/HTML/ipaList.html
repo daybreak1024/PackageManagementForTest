@@ -2,20 +2,18 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <script src="./node_modules/vue/dist/vue.js"></script>
-    <script src="./node_modules/axios/dist/axios.min.js"></script>
+    <script src="/node_modules/vue/dist/vue.min.js"></script>
+    <script src="/node_modules/axios/dist/axios.min.js"></script>
+
     <script
       type="text/javascript"
       src="//static.runoob.com/assets/qrcode/qrcode.min.js"
     ></script>
-    <script
-      type="text/javascript"
-      src="/download/JS/requestIPAList.js"
-    ></script>
+  
+    <link rel="stylesheet" href="/download/CSS/ipaList.css"/>
 
-    <link rel="stylesheet" href="/download/CSS/ipaList.css" />
+    <!-- <script type="module" src="/download/JS/requestIPAList.js"> -->
+    </script>
 
     <title>ipa 下载列表</title>
   </head>
@@ -39,20 +37,21 @@
         手机扫码下载：
       </div>
     </div>
-    <script>
-      function creatTable(data, isiOS) {
-        var keyData = {
-          id: "ID",
-          name: "项目名称",
-          version: "版本号",
-          buildVersion: "构建版本号",
-          description: "描述",
-          resourceURL: "点击下载",
-          date: "上传日期"
-        };
-        let _html = "";
-        data.map((ipaInfo, index) => {
-          _html += `
+<script>
+
+function creatTable(data, isiOS) {
+  var keyData = {
+    id: "ID",
+    name: "项目名称",
+    version: "版本号",
+    buildVersion: "构建版本号",
+    description: "描述",
+    resourceURL: "点击下载",
+    date: "上传日期"
+  };
+  let _html = "";
+  data.map((ipaInfo, index) => {
+    _html += `
                           ${index % 2 == 0 ? `<tr>` : `<tr class="alt">`}
                           ${Object.keys(keyData)
                             .map(key => {
@@ -68,8 +67,8 @@
                               return ` <td> ${value} </td>`;
                             })
                             .join(" ")} </tr>`;
-        });
-        return `<table>
+  });
+  return `<table>
                   <tr>
                   ${Object.keys(keyData)
                     .map(key => `<th> ${keyData[key]} </th>`)
@@ -77,120 +76,124 @@
                   </tr>
                   ${_html} 
                   </table> `;
+}
+
+var toplink = new Vue({
+  el: "#ul",
+  data: {
+    isShow: false
+  },
+  mounted() {
+    var url = window.location.href; //获取当前url
+    var dz_url = url.split("#")[0]; //获取#/之前的字符串
+    var cs = dz_url.split("?")[1]; //获取?之后的参数字符串
+    var cs_arr = cs.split("&"); //参数字符串分割为数组
+    var cs = {};
+    for (var i = 0; i < cs_arr.length; i++) {
+      //遍历数组，拿到json对象
+      cs[cs_arr[i].split("=")[0]] = cs_arr[i].split("=")[1];
+    }
+
+    if (cs.os == "iOS") {
+      this.isShow = true;
+    }
+  }
+});
+
+new Vue({
+  el: "#tableView",
+  data: {
+    pageNum: 1,
+    pageSize: 10,
+    currentData: [],
+    tableHtml: ""
+  },
+  methods: {
+    requestIPAList: function() {
+      axios
+        .get(
+          `/list${location.search}&pageSize=${this.pageSize}&pageNum=${this.pageNum}`
+        )
+        .then(response => {
+          let jsonData = response.data;
+
+          if (jsonData == undefined || jsonData["code"] != 0) {
+            alert(
+              jsonData["msg"] != undefined
+                ? jsonData["msg"]
+                : "请求错误，请检查"
+            );
+            return;
+          }
+          let data = jsonData["data"];
+          if (!Array.isArray(data)) {
+            alert("数据格式错误");
+            return;
+          }
+          this.currentData = data;
+          this.tableHtml = creatTable(data, toplink.isShow);
+        })
+        .catch(function(error) {
+          // 请求失败处理
+          console.log(error);
+          alert(JSON.stringify(error));
+        });
+    },
+    nextPage: function() {
+      if (this.currentData.length < this.pageSize) {
+        alert("已经是最后一页了");
+        return;
       }
-      var toplink = new Vue({
-        el: "#ul",
-        data: {
-          isShow: false
-        },
-        mounted() {
-          var url = window.location.href; //获取当前url
-          var dz_url = url.split("#")[0]; //获取#/之前的字符串
-          var cs = dz_url.split("?")[1]; //获取?之后的参数字符串
-          var cs_arr = cs.split("&"); //参数字符串分割为数组
-          var cs = {};
-          for (var i = 0; i < cs_arr.length; i++) {
-            //遍历数组，拿到json对象
-            cs[cs_arr[i].split("=")[0]] = cs_arr[i].split("=")[1];
-          }
+      this.pageNum += 1;
+      this.requestIPAList();
+    },
+    previoustPage: function() {
+      if (this.pageNum == 1) {
+        alert("已经是第一页了");
+        return;
+      }
+      this.pageNum -= 1;
+      this.requestIPAList();
+    }
+  },
+  mounted() {
+    this.requestIPAList();
+  }
+});
 
-          if (cs.os == "iOS") {
-            this.isShow = true;
-          }
-        }
-      });
-      new Vue({
-        el: "#tableView",
-        data: {
-          pageNum: 1,
-          pageSize: 10,
-          currentData: [],
-          tableHtml: ""
-        },
-        methods: {
-          requestIPAList: function() {
-            axios
-              .get(
-                `/list${location.search}&pageSize=${this.pageSize}&pageNum=${this.pageNum}`
-              )
-              .then(response => {
-                let jsonData = response.data;
+new Vue({
+  el: "#qrcodeHandle",
+  data: {
+    isMobile: true
+  },
+  methods: {
+    createQRIfNeed: function() {
+      if (
+        !navigator.userAgent.match(
+          /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
+        )
+      ) {
+        this.isMobile = true;
+        var url = document.URL;
+        var qrcode = new QRCode("qrcode", {
+          text: url,
+          width: 128,
+          height: 128,
+          colorDark: "#3198f7",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      } else {
+        this.isMobile = false;
+      }
+    }
+  },
+  mounted() {
+    this.createQRIfNeed();
+  }
+});
+</script>
 
-                if (jsonData == undefined || jsonData["code"] != 0) {
-                  alert(
-                    jsonData["msg"] != undefined
-                      ? jsonData["msg"]
-                      : "请求错误，请检查"
-                  );
-                  return;
-                }
-                let data = jsonData["data"];
-                if (!Array.isArray(data)) {
-                  alert("数据格式错误");
-                  return;
-                }
-                this.currentData = data;
-                this.tableHtml = creatTable(data, toplink.isShow);
-              })
-              .catch(function(error) {
-                // 请求失败处理
-                console.log(error);
-                alert(JSON.stringify(error));
-              });
-          },
-          nextPage: function() {
-            if (this.currentData.length < this.pageSize) {
-              alert("已经是最后一页了");
-              return;
-            }
-            this.pageNum += 1;
-            this.requestIPAList();
-          },
-          previoustPage: function() {
-            if (this.pageNum == 1) {
-              alert("已经是第一页了");
-              return;
-            }
-            this.pageNum -= 1;
-            this.requestIPAList();
-          }
-        },
-        mounted() {
-          this.requestIPAList();
-        }
-      });
-
-      var qrcodeHandle = new Vue({
-        el: "#qrcodeHandle",
-        data: {
-          isMobile: true
-        },
-        methods: {
-          createQRIfNeed: function() {
-            if (
-              !navigator.userAgent.match(
-                /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
-              )
-            ) {
-              this.isMobile = true;
-              var url = document.URL;
-              var qrcode = new QRCode("qrcode", {
-                text: url,
-                width: 128,
-                height: 128,
-                colorDark: "#3198f7",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-              });
-            } else {
-              this.isMobile = false;
-            }
-          }
-        },
-        mounted() {
-          this.createQRIfNeed();
-        }
-      });
-    </script>
   </body>
+
 </html>

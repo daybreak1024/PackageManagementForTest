@@ -68,6 +68,7 @@ tr.alt {
 
 button {
     color: #3198f7;
+    border: 1px solid transparent; 
 }
 
 button:hover {
