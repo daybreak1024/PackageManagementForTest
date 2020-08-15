@@ -1,0 +1,13 @@
+[
+
+    {
+        "project": "PageManager",
+        "OS": "iOS",
+        "identifier": "zlm.daybrea.com"
+    },
+    {
+        "project": "PageManager",
+        "OS": "Android",
+        "identifier": "zlm.daybrea.com"
+    }
+]
