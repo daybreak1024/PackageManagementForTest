@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/node_modules/vue/dist/vue.min.js"></script>
+    <script src="/node_modules/axios/dist/axios.min.js"></script>
+
+    <link rel="stylesheet" href="/download/CSS/ipaList.css" />
+
+
+    <title>项目管理</title>
+</head>
+
+<body>
+    <div id="tableView">
+        <div v-html="tableHtml"></div>
+    </div>
+    <script>
+        function creatTable(data) {
+            var keyData = {
+                project: "项目名称",
+                OS: "系统",
+                identifier: "identifier/包名",
+                uploadPage: "上传页面",
+                downloadPage: "下载页面",
+            };
+
+            let _html = "";
+            data.map((info, index) => {
+                        _html += `
+                                  ${index % 2 == 0 ? `<tr>` : `<tr class="alt">`}
+                                  ${Object.keys(keyData)
+                                    .map(key => {
+                                      let value = info[key] || "--";
+                                      if (key === "uploadPage") {
+                                        let url = `/upload.html?project=${info["project"]}&os=${info["OS"]}&identifier=${info["identifier"]}`;
+                                        value = `<a href=${url}>上传</a>`;
+                                      }else if (key === "downloadPage"){
+                                        let url = `/ipaList.html?project=${info["project"]}&os=${info["OS"]}`;
+                                        value = `<a href=${url}>下载</a>`;
+                                      }
+                                      return ` <td> ${value} </td>`;
+                                    })
+                                    .join(" ")} </tr>`;
+          });
+          return `<table>
+                          <tr>
+                          ${Object.keys(keyData)
+                            .map(key => `<th> ${keyData[key]} </th>`)
+                            .join("")} 
+                          </tr>
+                          ${_html} 
+                          </table> `;
+        }
+        
+        
+        new Vue({
+          el: "#tableView",
+          data: {
+            tableHtml: ""
+          },
+          methods: {
+            requestProjectList: function() {
+                axios
+                .get("/projectConfig")
+                .then(response => {
+
+                  let jsonData = response.data;
+                  
+                  if (jsonData == undefined || jsonData["code"] != 0) {
+                    alert(
+                      jsonData["msg"] != undefined
+                        ? jsonData["msg"]
+                        : "请求错误，请检查"
+                    );
+                    return;
+                  }
+                  let data = jsonData["data"];
+                  if (!Array.isArray(data)) {
+                    alert("数据格式错误");
+                    return;
+                  }
+
+                  this.tableHtml = creatTable(data);
+                })
+                .catch(function(error) {
+                  // 请求失败处理
+                  console.log(error);
+                  alert(JSON.stringify(error));
+                });
+            }
+          },
+          mounted() {
+            this.requestProjectList();
+          }
+        });
+    </script>
+</body>
+
+</html>

@@ -77,19 +77,19 @@ async function checkDirAndMkdirIfNeed(destDirPath) {
 }
 
 /**
- * 移动上传的 iPA
+ * 移动上传的安装包到目标位置
  * @param {string} destDir 存储目标相对位置
  * @param {Multer.File} file 文件处理
  */
-function handleIPAInfo(destDir, file, cb) {
-  console.log("ipa 处理开始");
+function handleInstallationPackage(destDir, file, cb) {
+  console.log("安装包 处理开始");
 
   if (!checkDirAndMkdirIfNeed(destDir)) {
     cb(false);
     return false;
   }
 
-  // 移动 ipa
+  // 移动 安装包
   let sourceFileAbsolutePath = path.join(__dirname, file.path);
   let destPath = path.join(destDir, file.originalname);
   let destAbsolutePath = path.join(__dirname, destPath);
@@ -111,7 +111,7 @@ function handleIPAInfo(destDir, file, cb) {
  * @param {string} destDir  存储目标相对位置
  * @param {string} ipaURL ipa 对应的下载位置
  */
-function handlePlist(destDir, ipaURL, title, version) {
+function handlePlist(destDir, ipaURL, title, version,identifier) {
   console.log("plist 处理开始");
 
   if (!checkDirAndMkdirIfNeed(destDir)) {
@@ -132,12 +132,11 @@ function handlePlist(destDir, ipaURL, title, version) {
   let jsonPlist = plist.parse(plistFile);
 
   // 修改内容
-    // 修改内容 
-  // 修改内容
   jsonPlist.items[0].assets[0].url = ipaURL; // 修改 ipa 下载地址
   jsonPlist.items[0].metadata["bundle-version"] = version; // version
+  jsonPlist.items[0].metadata["bundle-identifier"] = identifier; // version
   jsonPlist.items[0].metadata.title = title; // title
-
+  
   // 转换为 plist
   var builder = plist.build(jsonPlist);
   // 存储
@@ -158,8 +157,6 @@ function updatedInfoPlistUrl(newHost) {
   pa.forEach(function(ele) {
     let subDirPath = path.join(dirPath, ele);
     var info = fs.statSync(subDirPath);
-		var info = fs.statSync(subDirPath);	
-    var info = fs.statSync(subDirPath);
     if (info.isDirectory()) {
       let infoPlistPath = path.join(subDirPath, plistFileName);
       updatedInfoPlistUrlWith(newHost, infoPlistPath);
@@ -167,7 +164,11 @@ function updatedInfoPlistUrl(newHost) {
   });
 }
 
-function updatedInfoPlistUrlWith(newHost, filePath) {
+async function updatedInfoPlistUrlWith(newHost, filePath) {
+  let isExists = await getStat(filePath);
+  if (!isExists){
+    return;
+  }
   // 读取 plist
   let plistFile = fs.readFileSync(filePath, "utf8");
   // 解析为 json  「jsonPlist 的内容」看最下面
@@ -214,7 +215,7 @@ function updatedInfoPlistUrlWith(newHost, filePath) {
     */
 
 module.exports = {
-  handleIPAInfo: handleIPAInfo,
+  handleInstallationPackage: handleInstallationPackage,
   handlePlist: handlePlist,
   updatedInfoPlistUrl: updatedInfoPlistUrl,
 };
