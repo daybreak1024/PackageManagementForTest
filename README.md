@@ -12,9 +12,15 @@
 ## 初始化
 请打开[安装包下载平台说明](./configuration/安装包下载平台说明.md)，进行 mysql、证书的初始化处理。
 
+## 配置
+### 添加项目
+在`./source/projectJson`中，参考`projectJSONTemplate.json`填充`projectConfig.json`。非`iOS`的项目会直接下载源文件。
+
 ## 使用地址
-`ipa 列表地址`服务器的默认地址为列表地址（就是直接输入服务器的地址+端口就会跳转到），也可以使用`/ipaList.html`访问。
-`上传地址`使用`/upload.html`
+`project 列表地址`服务器的默认地址为列表地址（就是直接输入服务器的地址+端口就会跳转到）
+`ipa 列表地址`，通过 `project 列表地址` 下载跳转。
+`上传地址`，通过 `project 列表地址` 上传跳转
+
 
 ## 特殊情况处理
 
